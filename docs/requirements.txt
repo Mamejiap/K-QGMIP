@@ -1,0 +1,11 @@
+# K-QGMIP — Dependencias de Python
+
+# Dependencias obligatorias (instalar antes de ejecutar)
+numpy>=1.21
+scipy>=1.7
+colorama>=0.4
+
+# Dependencias internas (NO instalar — se simulan con stubs automáticos)
+# pyemd
+# pyinstrument
+# pyttsx3

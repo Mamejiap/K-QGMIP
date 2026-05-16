@@ -1,0 +1,8 @@
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Iniciando | k=3 | vértices=6
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess:   Fase 1/2 | restantes=6
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess:   Fase 2/2 | restantes=2
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Finalizado | φ=0.750000 | grupos=3
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Iniciando | k=3 | vértices=6
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess:   Fase 1/2 | restantes=6
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess:   Fase 2/2 | restantes=2
+2026-05-16 00:28:37 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Finalizado | φ=0.750000 | grupos=3

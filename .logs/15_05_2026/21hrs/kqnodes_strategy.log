@@ -1,0 +1,3 @@
+2026-05-15 21:46:12 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Iniciando | k=2 | vértices=4
+2026-05-15 21:46:12 [kqnodes_strategy] CRITICAL MainProcess:   Fase 1/1 | restantes=4
+2026-05-15 21:46:12 [kqnodes_strategy] CRITICAL MainProcess: [KQNodes] Finalizado | φ=0.500000 | grupos=2
