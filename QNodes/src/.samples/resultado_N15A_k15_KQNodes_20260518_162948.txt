@@ -1,0 +1,36 @@
+============================================================
+  RESULTADO K-QGMIP — Partición de Mínima Información
+============================================================
+  Fecha / hora  : 2026-05-18 16:29:48
+  Archivo CSV   : c:\Users\matem\Documents\Claude\Projects\K-QGMIP\K-QGMIP_Final\QNodes\src\.samples\N15A.csv
+  Estado inicial: 000000000000000
+  Algoritmo     : KQNodes
+  k (grupos)    : 15
+------------------------------------------------------------
+  Pérdida EMD   : 0.32658529
+  Tiempo total  : 2.028 s
+------------------------------------------------------------
+  Partición encontrada:
+    G1:{-|a}
+    G2:{-|b}
+    G3:{-|d}
+    G4:{-|n}
+    G5:{A,B,C,E,F,I,K,L,M,N|c,e,f,k,l,m}
+    G6:{D|-}
+    G7:{G|-}
+    G8:{H|-}
+    G9:{J|-}
+    G10:{O|-}
+    G11:{-|g}
+    G12:{-|h}
+    G13:{-|i}
+    G14:{-|j}
+    G15:{-|o}
+============================================================
+
+  Cómo interpretar la partición:
+  · Cada Gj:{Futuros|Mecanismos} es un grupo independiente.
+  · Letras mayúsculas = variables futuras (EFFECT).
+  · Letras minúsculas = mecanismos presentes (ACTUAL).
+  · '-' = el grupo no incluye ese rol.
+============================================================
