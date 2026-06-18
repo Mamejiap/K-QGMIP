@@ -252,16 +252,99 @@ def pedir_k(N):
             err_msg("Introduce un número entero.")
 
 def pedir_algoritmo():
-    """Muestra menú y pide elección 1/2."""
+    """Muestra menú y pide elección 1/2/3."""
     seccion("Selección de algoritmo")
-    print(f"  {AZUL}1{RESET}  KQNodes      — heurístico voraz (más rápido, robusto)")
-    print(f"  {AZUL}2{RESET}  KGeometricSIA — geométrico BFS/DP (más preciso, N ≤ 6)")
+    print(f"  {AZUL}1{RESET}  KQNodes            — heurístico voraz (más rápido, robusto)")
+    print(f"  {AZUL}2{RESET}  KGeometricSIA      — geométrico BFS/DP (más preciso, N ≤ 6)")
+    print(f"  {AZUL}3{RESET}  Comparativa Automática — ejecuta ambos y genera gráficas")
     print()
     while True:
-        op = pedir("Elige algoritmo [1/2]:")
-        if op in ("1", "2"):
+        op = pedir("Elige algoritmo [1/2/3]:")
+        if op in ("1", "2", "3"):
             return int(op)
-        err_msg("Opción no válida. Escribe 1 o 2.")
+        err_msg("Opción no válida. Escribe 1, 2 o 3.")
+
+
+# ══════════════════════════════════════════════════════════════════════════
+# FLUJO DE COMPARATIVA AUTOMÁTICA
+# ══════════════════════════════════════════════════════════════════════════
+
+def flujo_comparativa(csv_path: str, tpm, N: int, k: int, estado: str):
+    """
+    Orquesta la comparativa automática: ejecuta ambos algoritmos,
+    imprime el resumen y guarda las gráficas en outputs/comparativas/.
+    """
+    try:
+        import benchmarking as bm
+    except ImportError:
+        err_msg(
+            "No se encontró benchmarking.py en el directorio del proyecto. "
+            "Asegúrate de que el archivo existe junto a interfaz_kqmip.py."
+        )
+        return
+
+    output_dir = os.path.join(SCRIPT_DIR, "outputs", "comparativas")
+    os.makedirs(output_dir, exist_ok=True)
+
+    # ── 1. Comparativa directa ──────────────────────────────────────────────
+    seccion("Comparativa Automática — ejecutando ambos algoritmos")
+    warn_msg("Esto puede tardar varios minutos para N > 5.")
+    print()
+
+    resultados = bm.comparar_algoritmos(
+        csv_path=csv_path,
+        estado=estado,
+        k=k,
+        verbose=True,
+    )
+
+    # ── 2. Resumen textual ──────────────────────────────────────────────────
+    print()
+    resumen = bm.resumen_textual(resultados)
+    print(resumen)
+
+    # ── 3. Gráfica de barras ────────────────────────────────────────────────
+    print()
+    seccion("Generando gráficas")
+    print(f"  {AZUL}►{RESET} Panel comparativo (barras EMD + tiempo) …", end=" ", flush=True)
+    try:
+        ruta1 = bm.graficar_comparativa(resultados, output_dir=output_dir)
+        ok_msg(f"Guardada en: {ruta1}")
+    except Exception as exc:
+        err_msg(f"No se pudo generar la gráfica de barras: {exc}")
+        ruta1 = None
+
+    # ── 4. Gráfica de escalabilidad ─────────────────────────────────────────
+    print(f"  {AZUL}►{RESET} Gráfica de escalabilidad (N=2..6, k=2) …")
+    try:
+        ruta2 = bm.graficar_escalabilidad(output_dir=output_dir, k=2, verbose=True)
+        ok_msg(f"Guardada en: {ruta2}")
+    except Exception as exc:
+        err_msg(f"No se pudo generar la gráfica de escalabilidad: {exc}")
+        ruta2 = None
+
+    # ── 5. Conclusión ────────────────────────────────────────────────────────
+    print()
+    linea("═", VERDE)
+    print(VERDE + Style.BRIGHT + "  RESULTADO FINAL DE LA COMPARATIVA" + RESET)
+    linea("─", VERDE)
+    g_emd  = resultados["ganador_emd"]
+    g_tiem = resultados["ganador_tiempo"]
+    print(f"  {AZUL}Mejor calidad (EMD ↓){RESET}  : {AMARILLO}{g_emd}{RESET}")
+    print(f"  {AZUL}Más rápido (tiempo ↓){RESET}  : {AMARILLO}{g_tiem}{RESET}")
+    if g_emd == g_tiem and g_emd not in ("Empate", "Indeterminado"):
+        ok_msg(f"{g_emd} es SUPERIOR en ambas métricas para este caso.")
+    elif g_emd == "Empate":
+        ok_msg(f"Empate en calidad. {g_tiem} termina más rápido.")
+    else:
+        warn_msg(
+            f"{g_emd} gana en precisión; "
+            f"{g_tiem} gana en velocidad."
+        )
+    if ruta1 or ruta2:
+        print()
+        ok_msg(f"Gráficas disponibles en: {output_dir}")
+    linea("═", VERDE)
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -573,10 +656,34 @@ def main():
     # ── 4. Algoritmo y k ────────────────────────────────────────────────
     algoritmo_id = pedir_algoritmo()
     k = pedir_k(N)
+
+    # ── 5a. RAMA COMPARATIVA AUTOMÁTICA ────────────────────────────────
+    if algoritmo_id == 3:
+        print()
+        warn_msg("Presiona ENTER para iniciar la comparativa o Ctrl+C para cancelar.")
+        try:
+            input()
+        except KeyboardInterrupt:
+            print()
+            warn_msg("Cancelado por el usuario.")
+            sys.exit(0)
+        flujo_comparativa(csv_path, tpm, N, k, estado)
+        print()
+        resp = pedir("¿Deseas analizar otro sistema? [s/N]:")
+        if resp.lower() in ("s", "si", "sí", "yes", "y"):
+            main()
+        else:
+            print()
+            linea("═", AZUL)
+            print(AZUL + Style.BRIGHT + "  Gracias por usar K-QGMIP." + RESET)
+            linea("═", AZUL)
+            print()
+        return
+
+    # ── 5b. RAMA ALGORITMO INDIVIDUAL ──────────────────────────────────
     nombre_alg = "KQNodes" if algoritmo_id == 1 else "KGeometricSIA"
     ok_msg(f"Algoritmo: {nombre_alg}  |  k = {k}")
 
-    # ── 5. Confirmar y ejecutar ─────────────────────────────────────────
     print()
     warn_msg("Presiona ENTER para ejecutar o Ctrl+C para cancelar.")
     try:
